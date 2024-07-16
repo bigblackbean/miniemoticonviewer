@@ -9,6 +9,7 @@
   </head>
   <body>
     <div class="wrap">
+      <div id="chatArea" class="chat-area"></div>
       <div class="bottom-controler">
         <div id="chatImageWrap" class="chat-image-wrap"></div>
         <div class="controler-wrap">
@@ -19,7 +20,11 @@
           >
             받기
           </button>
-          <label for="imageUploadButton" class="image-upload-button">
+          <label
+            for="imageUploadButton"
+            id="imageUploadLabel"
+            class="image-upload-label"
+          >
             <input
               type="file"
               name="imageUploadButton"
@@ -29,7 +34,7 @@
               multiple
             />
             <div class="image-button-replace">
-              <p>이미지 업로드</p>
+              <p>이미지 업로드(클릭/드래그)</p>
             </div>
           </label>
           <button
@@ -41,7 +46,6 @@
           </button>
         </div>
       </div>
-      <div id="chatArea" class="chat-area"></div>
     </div>
   </body>
   <script src="./script/main.js"></script>

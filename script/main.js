@@ -2,11 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewerButton = document.querySelector("#viewerButton"); // 뷰어 창 띄우기 버튼
   const chatArea = document.querySelector("#chatArea"); // 채팅이 입력되는 영역
   const chatImageWrap = document.querySelector("#chatImageWrap"); // 채팅영역에 들어가기 전 이미지
-  const imageUploader = document.querySelector("#imageUploadButton"); // 이미지 업로드 버튼
+  const imageUploadButton = document.querySelector("#imageUploadButton"); // 이미지 업로드 버튼
+  const imageUploadLabel = document.querySelector("#imageUploadLabel"); // 이미지 업로드 버튼
   const pullButton = document.querySelector("#pullButton"); // 이미지 받기 버튼
   const sendButton = document.querySelector("#sendButton"); // 이미지 보내기 버튼
 
-  const imoticonGroup = [];
+  let imoticonGroup = [];
 
   if (viewerButton) {
     viewerButton.addEventListener("click", (e) => {
@@ -15,53 +16,68 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (imageUploader) {
-    imageUploader.addEventListener("change", (e) => {
-      console.log("[reader]", e.target.files);
-      for (let i = 0; i < e.target.files.length; i += 1) {
-        const reader = new FileReader();
-        reader.readAsDataURL(e.target.files[i]);
+  const readImageFile = (files) => {
+    for (let i = 0; i < files.length; i += 1) {
+      const reader = new FileReader();
+      reader.readAsDataURL(files[i]);
 
-        reader.onload = (event) => {
-          console.log(event);
-          const img = document.createElement("img");
-          imoticonGroup[i] = event.target.result;
-          img.setAttribute("src", event.target.result);
-          img.setAttribute("class", "emoticon-image");
-          chatImageWrap.appendChild(img);
-        };
-      }
+      reader.onload = (event) => {
+        const img = document.createElement("img");
+        imoticonGroup[i] = event.target.result;
+        img.setAttribute("src", event.target.result);
+        img.setAttribute("class", "emoticon-image");
+        chatImageWrap.appendChild(img);
+      };
+    }
+  };
+
+  if (imageUploadButton) {
+    imageUploadButton.addEventListener("change", (e) => {
+      console.log("[e]", e.target.files);
+      readImageFile(e.target.files);
     });
   }
-  pullButton.addEventListener("click", () => {
-    const wrap = document.createElement("div");
-    wrap.setAttribute("class", "pull-message-wrap");
-    const message = document.createElement("div");
-    message.setAttribute("class", "pull-message");
-    imoticonGroup.forEach((imgUrl) => {
-      const img = document.createElement("img");
-      img.setAttribute("src", imgUrl);
-      img.setAttribute("class", "emoticon");
-      message.appendChild(img);
+  if (imageUploadLabel) {
+    imageUploadLabel.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      imageUploadLabel.classList.add("drag-over");
     });
-    wrap.appendChild(message);
-    chatArea.appendChild(wrap);
-    chatImageWrap.childNodes.remove();
+    imageUploadLabel.addEventListener("drop", (e) => {
+      e.preventDefault();
+      readImageFile(e.dataTransfer.files);
+      imageUploadLabel.classList.remove("drag-over");
+    });
+  }
+
+  const putMessage = (main) => {
+    if (chatImageWrap.childNodes.length > 0) {
+      const wrap = document.createElement("div");
+      wrap.setAttribute("class", `${main}-message-wrap message-wrap`);
+      if (chatImageWrap.childNodes.length === 1) {
+        wrap.classList.add("solo");
+      }
+      const message = document.createElement("div");
+      message.setAttribute("class", `${main}-message`);
+      imoticonGroup.forEach((imgUrl) => {
+        const img = document.createElement("img");
+        img.setAttribute("src", imgUrl);
+        img.setAttribute("class", "emoticon");
+        message.appendChild(img);
+      });
+      wrap.appendChild(message);
+      chatArea.appendChild(wrap);
+      while (chatImageWrap.firstChild) {
+        chatImageWrap.removeChild(chatImageWrap.firstChild);
+      }
+      imoticonGroup = [];
+    }
+  };
+
+  pullButton.addEventListener("click", () => {
+    putMessage("pull");
   });
 
   sendButton.addEventListener("click", () => {
-    const wrap = document.createElement("div");
-    wrap.setAttribute("class", "send-message-wrap");
-    const message = document.createElement("div");
-    message.setAttribute("class", "send-message");
-    imoticonGroup.forEach((imgUrl) => {
-      const img = document.createElement("img");
-      img.setAttribute("src", imgUrl);
-      img.setAttribute("class", "emoticon");
-      message.appendChild(img);
-    });
-    wrap.appendChild(message);
-    chatArea.appendChild(wrap);
+    putMessage("send");
   });
-  console.log("[imoticonGroup]", imoticonGroup);
 });
