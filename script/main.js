@@ -73,11 +73,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  pullButton.addEventListener("click", () => {
-    putMessage("pull");
-  });
+  if (pullButton) {
+    pullButton.addEventListener("click", () => {
+      putMessage("pull");
+    });
+  }
 
-  sendButton.addEventListener("click", () => {
-    putMessage("send");
-  });
+  if (sendButton) {
+    sendButton.addEventListener("click", () => {
+      putMessage("send");
+    });
+  }
 });
